@@ -1,0 +1,181 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+    <script type="text/javascript">
+        var products;
+
+        function get(url, callback) {
+            var request = new XMLHttpRequest();
+            request.onreadystatechange = function () {
+                if (request.readyState == 4 && request.status == 200) {
+                    callback(request.responseText);
+                }
+            }
+            request.open("GET", url, true);
+            request.send(null);
+        }
+        
+        function post(url, payload, callback) {
+            var request = new XMLHttpRequest();
+            request.onreadystatechange = function () {
+                if (request.readyState == 4 && request.status == 200) {
+                    callback(request.responseText);
+                }
+            }
+            request.open("POST", url, true);
+            request.setRequestHeader("Content-type", "application/json");
+            request.send(payload);
+        }
+        
+        function listProducts(productsAsString) {
+            products = JSON.parse(productsAsString);
+            var productsContainer = document.getElementById("ProductsContainer");
+
+            for (var i = 0; i < products.length; i++) {
+                var product = products[i];
+                var productContainer = document.createElement("div");
+                productContainer.setAttribute("id", product.id);
+                productContainer.setAttribute("class", "ProductContainer");
+                var productNameContainer = document.createElement("div");
+                productNameContainer.setAttribute("class", "ProductNameContainer");
+                var textNode = document.createTextNode(product.name);
+                productNameContainer.appendChild(textNode);
+                productContainer.appendChild(productNameContainer);
+                var productPriceContainer = document.createElement("div");
+                productPriceContainer.setAttribute("class", "ProductPriceContainer");
+                textNode = document.createTextNode(product.price);
+                productPriceContainer.appendChild(textNode);
+                productContainer.appendChild(productPriceContainer);
+                var addProductContainer = document.createElement("div");
+                addProductContainer.setAttribute("class", "ProductAddContainer");
+                var addProductButton = document.createElement("button");
+                addProductButton.setAttribute("class", "AddProductButton");
+                addProductButton.setAttribute("onclick", "onAddProductButtonClicked('" + product.id + "')");
+                textNode = document.createTextNode("+");
+                addProductButton.appendChild(textNode);
+                addProductContainer.appendChild(addProductButton);
+                productContainer.appendChild(addProductContainer);
+                var subtractProductContainer = document.createElement("div");
+                subtractProductContainer.setAttribute("class", "SubtractProductContainer");
+                var subtractProductButton = document.createElement("button");
+                subtractProductButton.setAttribute("class", "SubtractProductButton")
+                subtractProductButton.setAttribute("onclick", "onSubtractProductButtonClicked('" + product.id + "')");
+                textNode = document.createTextNode("-");
+                subtractProductButton.appendChild(textNode);
+                subtractProductContainer.appendChild(subtractProductButton);
+                productContainer.appendChild(subtractProductContainer);
+                var productQuantityContainer = document.createElement("div");
+                productQuantityContainer.setAttribute("class", "ProductQuantityContainer");
+                textNode = document.createTextNode("0");
+                productQuantityContainer.appendChild(textNode);
+                productContainer.appendChild(productQuantityContainer);
+                productsContainer.appendChild(productContainer);
+            }
+
+        }
+
+        function onAddProductButtonClicked(elementId) {
+            incrementProductQuantity(elementId);
+        }
+
+        function incrementProductQuantity(elementId) {
+            var productContainer = document.getElementById(elementId);
+            var productQuantityContainer = productContainer.getElementsByClassName("ProductQuantityContainer")[0];
+            var productQuantity = parseInt(productQuantityContainer.innerHTML);
+            productQuantity++;
+            productQuantityContainer.innerHTML = productQuantity;
+        }
+
+        function onSubtractProductButtonClicked(elementId) {
+            decrementProductQuantity(elementId);
+        }
+
+        function decrementProductQuantity(elementId) {
+            var productContainer = document.getElementById(elementId);
+            var productQuantityContainer = productContainer.getElementsByClassName("ProductQuantityContainer")[0];
+            var productQuantity = parseInt(productQuantityContainer.innerHTML);
+            if (productQuantity > 0) {
+                productQuantity--;
+                productQuantityContainer.innerHTML = productQuantity;
+            }
+        }
+
+        function onCheckoutButtonClicked() {
+            post("http://localhost:8080/baskets", "{ \"id\": -1 }", function (responseText) {
+                var basket = JSON.parse(responseText);
+                alert("basket:\n" + responseText);
+                // create the sale items
+                for (var i = 0; i < products.length; i++) {
+                    var product = products[i]
+                    var productContainer = document.getElementById(product.id);
+                    var productQuantityContainer = productContainer.getElementsByClassName("ProductQuantityContainer")[0];
+                    var productQuantity = parseInt(productQuantityContainer.innerHTML);
+
+                    if (productQuantity > 0) {
+                        var saleItem = JSON.parse("{}");
+                        saleItem.id = -1;
+                        saleItem.productId = product.id;
+                        saleItem.quantity = productQuantity;
+                        saleItem.pricePerUnit = product.price;
+                        saleItem.unadjustedPrice = productQuantity * product.price;
+                        saleItem.adjustedPrice = -1;
+                        post("http://localhost:8080/baskets/" + basket.id + "/items", JSON.stringify(saleItem), function (responseText) {
+                            alert("saleItem:\n" + responseText);
+                            var returnedSaleItem = JSON.parse(responseText);
+                            get("http://localhost:8081/products/" + returnedSaleItem.productId, function (responseText) {
+                                var productDetails = JSON.parse(responseText);
+
+                                for (var j = 0; j < productDetails.promotions.length; j++) {
+                                    var promotion = JSON.parse("{}");
+                                    promotion.id = -1;
+                                    promotion.promotionId = productDetails.promotions[j].id;
+                                    promotion.type = productDetails.promotions[j].type;
+                                    promotion.requiredQuantity = productDetails.promotions[j].required_qty ? productDetails.promotions[j].required_qty : -1;
+                                    promotion.freeQuantity = productDetails.promotions[j].free_qty ? productDetails.promotions[j].free_qty : -1;
+                                    promotion.price = productDetails.promotions[j].price ? productDetails.promotions[j].price : -1;
+                                    promotion.requiredQuantity = productDetails.promotions[j].required_qty ? productDetails.promotions[j].required_qty : -1;
+                                    promotion.amount = productDetails.promotions[j].amount ? productDetails.promotions[j].amount : -1;
+                                    post("http://localhost:8080/baskets/" + basket.id + "/items/" + returnedSaleItem.id + "/promotions", JSON.stringify(promotion), function (responseText) {
+                                        alert("Promotion added for " + productDetails.name + ":\n" + responseText);
+                                    });
+                                }
+
+                            });
+                        });
+                    }
+
+                }
+
+                setTimeout(checkout, 1000, basket);
+            });
+        }
+
+        function checkout(basket) {
+            get("http://localhost:8080/checkout/" + basket.id, function (checkedOutBasketAsString) {
+                var checkedOutBasket = JSON.parse(checkedOutBasketAsString);
+                var unadjustedCost = 0;
+                var adjustedCost = 0;
+                for (var i = 0; i < checkedOutBasket.length; i++) {
+                    unadjustedCost += checkedOutBasket[i].unadjustedPrice;
+                    adjustedCost += checkedOutBasket[i].adjustedPrice;
+                }
+                alert("checked out basket " + basket.id + ":\n" + checkedOutBasketAsString + "\n\n" +
+                    "Total: " + unadjustedCost + ", Savings: " + (unadjustedCost - adjustedCost) + ", Balance: " + adjustedCost);
+            });
+        }
+
+        window.onload = function () {
+            get("http://localhost:8081/products", listProducts);
+        }
+    </script>
+<body>
+    <div id="ProductsContainer"></div>
+    <div id="CheckoutButtonContainer">
+        <button onclick="onCheckoutButtonClicked()">Checkout</button>
+    </div>
+</body>
+</html>

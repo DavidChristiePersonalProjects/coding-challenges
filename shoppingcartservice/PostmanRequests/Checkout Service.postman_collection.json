@@ -1,0 +1,229 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Checkout Service",
+		"_postman_id": "f421b122-7cb4-78dd-0f51-4853f93d9625",
+		"description": "A collection of API calls for testing the Checkout Service ",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Baskets",
+			"description": "A collection of requests for manipulating baskets",
+			"item": [
+				{
+					"name": "Get All Baskets",
+					"request": {
+						"url": "http://localhost:8080/baskets",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\": -1\n}"
+						},
+						"description": "Gets a list of all the baskets in a JSON format"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Basket",
+					"request": {
+						"url": "http://localhost:8080/baskets/1",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\": -1\n}"
+						},
+						"description": "/baskets/{basket.id}\n\nGets the basket with the given id in a JSON format"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Basket",
+					"request": {
+						"url": "http://localhost:8080/baskets",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\": -1\n}"
+						},
+						"description": "/baskets\n\nAdds the basket.\n\n{\n\t\"id\": -1\n}"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sale Items",
+			"description": "A collection of requests for manipulation sale items",
+			"item": [
+				{
+					"name": "Add Sale Item",
+					"request": {
+						"url": "http://localhost:8080/baskets/1/items",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\": -1,\n\t\"productId\": \"PWWe3w1SDU\" ,\n\t\"quantity\": 5,\n\t\"pricePerUnit\": 999,\n\t\"unadjustedPrice\": 4995,\n\t\"adjustedPrice\": -1\n}"
+						},
+						"description": "/baskets/{basket.id}/items\n\nAdds a sale item to the basket with the given id.\n\n{\n\t\"id\": -1,\n\t\"productId\": \"PWWe3w1SDU\" ,\n\t\"quantity\": 5,\n\t\"pricePerUnit\": 999,\n\t\"unadjustedPrice\": 4995,\n\t\"adjustedPrice\": -1\n}"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Sale Items",
+					"request": {
+						"url": "http://localhost:8080/baskets/1/items",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\": -1,\n\t\"productId\": \"PWWe3w1SDU\" ,\n\t\"quantity\": 5,\n\t\"pricePerUnit\": 999,\n\t\"unadjustedPrice\": 4995,\n\t\"adjustedPrice\": -1\n}"
+						},
+						"description": "/baskets/{basket.id}/items\n\nGets all the sale item associated to the basket with the given id."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Sale Item",
+					"request": {
+						"url": "http://localhost:8080/baskets/1/items/1",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\": -1,\n\t\"productId\": \"PWWe3w1SDU\" ,\n\t\"quantity\": 5,\n\t\"pricePerUnit\": 999,\n\t\"unadjustedPrice\": 4995,\n\t\"adjustedPrice\": -1\n}"
+						},
+						"description": "/baskets/{basket.id}/items/{sale_item.id}\n\nGets the sale item with the given id."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Promotions",
+			"description": "A collection of requests for manipulating promotions",
+			"item": [
+				{
+					"name": "Add Promotion",
+					"request": {
+						"url": "http://localhost:8080/baskets/1/items/1/promotions",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\": -1,\n\t\"promotionId\": \"ZRAwbsO2qM\" ,\n\t\"type\": \"BUY_X_GET_Y_FREE\",\n\t\"amount\": -1,\n\t\"requiredQuantity\": 2,\n\t\"freeQuantity\": 1,\n\t\"price\": -1\n}"
+						},
+						"description": "/baskets/{basket.id}/items/{sale_item.id}/promotions\n\nAdds a promotion\n\n{\n\t\"id\": -1,\n\t\"promotionId\": \"ZRAwbsO2qM\" ,\n\t\"type\": \"BUY_X_GET_Y_FREE\",\n\t\"amount\": -1,\n\t\"requiredQuantity\": 2,\n\t\"freeQuantity\": 1,\n\t\"price\": -1\n}"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Promotions",
+					"request": {
+						"url": "http://localhost:8080/baskets/1/items/1/promotions",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\": -1,\n\t\"promotionId\": \"ZRAwbsO2qM\" ,\n\t\"type\": \"BUY_X_GET_Y_FREE\",\n\t\"amount\": -1,\n\t\"requiredQuantity\": 2,\n\t\"freeQuantity\": 1,\n\t\"price\": -1\n}"
+						},
+						"description": "/baskets/{basket.id}/items/{sale_item.id}/promotions\n\nGets all promotions associated with the sale item id in a JSON format\n"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Promotion",
+					"request": {
+						"url": "http://localhost:8080/baskets/1/items/1/promotions/1",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\": -1,\n\t\"promotionId\": \"ZRAwbsO2qM\" ,\n\t\"type\": \"BUY_X_GET_Y_FREE\",\n\t\"amount\": -1,\n\t\"requiredQuantity\": 2,\n\t\"freeQuantity\": 1,\n\t\"price\": -1\n}"
+						},
+						"description": "/baskets/{basket.id}/items/{sale_item.id}/promotions/{promotion.id}\n\nGets the promotion with the given id in a JSON format\n"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Checkout",
+			"request": {
+				"url": "http://localhost:8080/checkout/1",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"id\": -1,\n\t\"promotionId\": \"ZRAwbsO2qM\" ,\n\t\"type\": \"BUY_X_GET_Y_FREE\",\n\t\"amount\": -1,\n\t\"requiredQuantity\": 2,\n\t\"freeQuantity\": 1,\n\t\"price\": -1\n}"
+				},
+				"description": "/checkout/{basket.id}\n\ncheckouts the basket with the given id\n\t"
+			},
+			"response": []
+		}
+	]
+}
